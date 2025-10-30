@@ -1,43 +1,43 @@
-import Post from '../models/post.js';
-import { isValidObjectId } from 'mongoose';
-import { deleteImageFromPost } from '../middleware/files.js';
+import Post from "../models/post.js";
+import { isValidObjectId } from "mongoose";
+import { deleteImageFromPost } from "../middleware/files.js";
 
 function getBaseUrl(req) {
   const protocol = req.protocol;
-  console.log('getBaseUrl req.protocol: ', req.protocol);
+  console.log("getBaseUrl req.protocol: ", req.protocol);
   // Use X-Forwarded-Host from Nginx proxy (if available), else use direct host
-  const host = req.get('X-Forwarded-Host') || req.get('host');
-  console.log(' - req.get("X-Forwarded-Host")', req.get('X-Forwarded-Host'));
-  console.log(' - req.get("host")', req.get('host'));
-  console.log('All headers: ', req.headers);
+  const host = req.get("X-Forwarded-Host") || req.get("host");
+  console.log(' - req.get("X-Forwarded-Host")', req.get("X-Forwarded-Host"));
+  console.log(' - req.get("host")', req.get("host"));
+  console.log("All headers: ", req.headers);
   const url = `${protocol}://${host}`;
-  console.log('Constructed url: ', url);
+  console.log("Constructed url: ", url);
   return url;
 }
 
-export async function deletePost(req, res, next) {
+export async function deletePost(req, res, _next) {
   const id = req.params.id;
   const userId = req.userData.userId;
 
-  console.log('requested to delete id ', id);
+  console.log("requested to delete id ", id);
   try {
     if (isValidObjectId(id)) {
       const postToDelete = await Post.findById(id);
       const deletion = await Post.deleteOne({ _id: id, author: userId });
-      console.log('deletion: ', deletion);
+      console.log("deletion: ", deletion);
 
       if (!deletion.acknowledged && !result.deletedCount) {
         return res.status(401).json({
-          message: 'Post delete denied, not authorized',
+          message: "Post delete denied, not authorized",
         });
       }
 
-      console.log('post deleted');
+      console.log("post deleted");
       const count = await Post.estimatedDocumentCount();
       deleteImageFromPost(postToDelete);
 
       return res.status(200).json({
-        message: 'post successfully deleted',
+        message: "post successfully deleted",
         count: count,
       });
     } else {
@@ -48,7 +48,6 @@ export async function deletePost(req, res, next) {
       message: error.message,
     });
   }
-  next();
 }
 
 export async function getPosts(req, res, _next) {
@@ -70,11 +69,13 @@ export async function getPosts(req, res, _next) {
   // limit limits the number of elements returned, cutting the tail.
   if (pageSize && currentPage) {
     try {
-      documents = await postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+      documents = await postQuery
+        .skip(pageSize * (currentPage - 1))
+        .limit(pageSize);
       // documents = await Post.find({ skip: pageSize * (currentPage - 1), limit: pageSize });
       count = await Post.estimatedDocumentCount();
     } catch (error) {
-      console.log('error ', error);
+      console.log("error ", error);
       return res.status(500).json({
         message: error.message,
       });
@@ -83,19 +84,19 @@ export async function getPosts(req, res, _next) {
     try {
       documents = await postQuery;
     } catch (error) {
-      console.log('error ', error);
+      console.log("error ", error);
       return res.status(500).json({
         message: error.message,
       });
     }
   }
 
-  console.log('documents: ', documents);
-  console.log('count: ', count);
+  console.log("documents: ", documents);
+  console.log("count: ", count);
 
   if (!documents || !count) {
     return res.status(200).json({
-      message: 'No posts found',
+      message: "No posts found",
     });
   }
 
@@ -109,10 +110,10 @@ export async function getPosts(req, res, _next) {
     };
   });
 
-  console.log('posts in get: ', posts.length);
+  console.log("posts in get: ", posts.length);
 
   return res.status(200).json({
-    message: 'Posts fetched successfully!',
+    message: "Posts fetched successfully!",
     posts: posts,
     count: count,
   });
@@ -120,17 +121,17 @@ export async function getPosts(req, res, _next) {
 
 export async function getPostWithId(req, res, _next) {
   const id = req.params.id;
-  console.log('requested to get post with id ', id);
+  console.log("requested to get post with id ", id);
   try {
     if (isValidObjectId(id)) {
       const post = await Post.findById(id);
 
       if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
+        return res.status(404).json({ message: "Post not found" });
       }
 
       return res.status(200).json({
-        message: 'successfully fetched post',
+        message: "successfully fetched post",
         post: {
           title: post.title,
           content: post.content,
@@ -151,7 +152,7 @@ export async function updatePost(req, res, _next) {
   const id = req.params.id;
   const userId = req.userData.userId;
 
-  console.log('patch with id ', id);
+  console.log("patch with id ", id);
   try {
     if (!isValidObjectId(id)) {
       throw Error(`unable to work with id of ${id} as ObjectId`);
@@ -160,7 +161,7 @@ export async function updatePost(req, res, _next) {
     const postToChange = await Post.findOne({ _id: id, author: userId });
 
     if (!req.file) {
-      console.log('There was no file provided');
+      console.log("There was no file provided");
 
       const result = await Post.updateOne(
         { _id: id, author: userId },
@@ -168,21 +169,24 @@ export async function updatePost(req, res, _next) {
       );
       if (!result.acknowledged && !result.modifiedCount) {
         return res.status(401).json({
-          message: 'Post update denied, not authorized',
+          message: "Post update denied, not authorized",
         });
       }
     } else {
-      console.log('There was a file provided');
+      console.log("There was a file provided");
 
       const url = getBaseUrl(req);
       const result = await Post.updateOne(
         { _id: id, author: userId },
-        { title: req.body.title, content: req.body.content,
-          imagePath: url + '/images/' + req.file.filename, },
+        {
+          title: req.body.title,
+          content: req.body.content,
+          imagePath: url + `/images/${userId}/` + req.file.filename,
+        },
       );
       if (!result.acknowledged && !result.modifiedCount) {
         return res.status(401).json({
-          message: 'Post update denied, not authorized',
+          message: "Post update denied, not authorized",
         });
       }
 
@@ -192,7 +196,7 @@ export async function updatePost(req, res, _next) {
     const post = await Post.findById(id);
     if (post) {
       return res.status(200).json({
-        message: 'successfully patched document',
+        message: "successfully patched document",
         post: {
           id: post._id,
           title: post.title,
@@ -203,7 +207,7 @@ export async function updatePost(req, res, _next) {
       });
     } else {
       return res.status(500).json({
-        message: 'Could not save document',
+        message: "Could not save document",
       });
     }
   } catch (error) {
@@ -213,22 +217,22 @@ export async function updatePost(req, res, _next) {
   }
 }
 
-export async function savePost(req, res, next) {
+export async function savePost(req, res, _next) {
   const url = getBaseUrl(req);
   const userId = req.userData.userId;
 
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url + '/images/' + req.file.filename,
+    imagePath: url + `/images/${userId}/` + req.file.filename,
     author: userId,
   });
 
   try {
-    console.log('request to save post: ', post);
+    console.log("request to save post: ", post);
     const savedDocument = await post.save();
     const count = await Post.estimatedDocumentCount();
-    console.log('result to save post: ', savedDocument);
+    console.log("result to save post: ", savedDocument);
     return res.status(201).json({
       message: savedDocument.message,
       post: {
@@ -245,5 +249,4 @@ export async function savePost(req, res, next) {
       message: error.message,
     });
   }
-  next();
 }
