@@ -1,0 +1,17 @@
+{
+  "name": "mean-course",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start:backend": "node --watch --env-file=./.env ./server.js"
+  },
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "multer": "^2.0.2"
+  }
+}
