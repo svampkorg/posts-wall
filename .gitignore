@@ -1,0 +1,8 @@
+backend/images
+backend/node_modules
+frontend/.angular/cache/20.3.4
+frontend/.gemini
+frontend/.vscode
+frontend/dist
+.env
+frontend/node_modules
