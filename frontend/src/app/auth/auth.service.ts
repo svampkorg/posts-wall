@@ -229,6 +229,7 @@ export class AuthService {
           }));
         },
         error: (err) => {
+          this.logout();
           console.error('getUser error: ', err);
         },
         complete: () => {

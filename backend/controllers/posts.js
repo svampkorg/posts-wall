@@ -4,14 +4,14 @@ import { deleteImageFromPost } from "../middleware/files.js";
 
 function getBaseUrl(req) {
   const protocol = req.protocol;
-  console.log("getBaseUrl req.protocol: ", req.protocol);
+  // console.log("getBaseUrl req.protocol: ", req.protocol);
   // Use X-Forwarded-Host from Nginx proxy (if available), else use direct host
   const host = req.get("X-Forwarded-Host") || req.get("host");
-  console.log(' - req.get("X-Forwarded-Host")', req.get("X-Forwarded-Host"));
-  console.log(' - req.get("host")', req.get("host"));
-  console.log("All headers: ", req.headers);
+  // console.log(' - req.get("X-Forwarded-Host")', req.get("X-Forwarded-Host"));
+  // console.log(' - req.get("host")', req.get("host"));
+  // console.log("All headers: ", req.headers);
   const url = `${protocol}://${host}`;
-  console.log("Constructed url: ", url);
+  // console.log("Constructed url: ", url);
   return url;
 }
 
