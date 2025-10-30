@@ -1,0 +1,20 @@
+<mat-expansion-panel [class.editing]="isActivePost()" (opened)="getPostAuthor()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{ post().title }}
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <p>{{ post().content }}</p>
+  <img class="post-image" [src]="post().imagePath" [alt]="post().title" />
+  <div class="author-field">
+    <p class="author">Author:</p>
+    <p class="author-email">{{ this.postAuthor() }}</p>
+  </div>
+  <!-- <div></div><p>Author: {{ post().author }}</p> -->
+  @if (isAuthenticated() && this.isAuthor()) {
+    <mat-action-row>
+      <button mat-raised-button class="is-primary" [routerLink]="['/edit', post().id]">EDIT</button>
+      <button mat-raised-button (click)="onDelete()">DELETE</button>
+    </mat-action-row>
+  }
+</mat-expansion-panel>

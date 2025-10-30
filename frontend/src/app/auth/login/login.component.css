@@ -1,0 +1,30 @@
+mat-progress-spinner {
+  margin: auto;
+}
+
+mat-card {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  padding: 0.5rem;
+}
+
+mat-card>form {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-spinner {
+  margin: auto;
+}
+
+mat-form-field>input {
+  width: 100%;
+}
+
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}

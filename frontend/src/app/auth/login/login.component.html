@@ -1,0 +1,52 @@
+<mat-card>
+  @if (isLoading()) {
+    <mat-progress-spinner></mat-progress-spinner>
+  } @else {
+    <form (submit)="onLogin(loginForm)" #loginForm="ngForm">
+      <mat-form-field>
+        <input
+          matInput
+          name="email"
+          ngModel
+          type="email"
+          placeholder="E-Mail"
+          email
+          #emailInput="ngModel"
+          [ngModel]="loginFormData().email"
+        />
+        @if (emailInput.invalid) {
+          <mat-error>Please enter a valid email</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          name="password"
+          ngModel
+          type="password"
+          placeholder="Password"
+          required
+          minlength="4"
+          #passwordInput="ngModel"
+          [ngModel]="loginFormData().password"
+        />
+        @if (passwordInput.invalid || isSignup()) {
+          <mat-error>Your password needs to be at lest 4 characters</mat-error>
+        }
+      </mat-form-field>
+      <div class="form-buttons">
+        <mat-checkbox [checked]="isSignup()" (change)="isSignup.set(!isSignup())"
+          >Signup?</mat-checkbox
+        >
+        <button
+          [disabled]="passwordInput.invalid || emailInput.invalid"
+          class="login-user"
+          matButton
+          type="submit"
+        >
+          {{ loginButtonText() }}
+        </button>
+      </div>
+    </form>
+  }
+</mat-card>

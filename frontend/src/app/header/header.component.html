@@ -1,0 +1,21 @@
+<mat-toolbar>
+  <span><a class="messages" routerLink="/">Posts</a></span>
+  <span class="spacer"></span>
+  <ul>
+    @if (authService.isAuthenticated()) {
+      <li>
+        <button mat-button routerLink="/profile" routerLinkActive="active-link">Profile</button>
+      </li>
+      <li>
+        <button mat-button (click)="authService.logout()">Logout</button>
+      </li>
+      <li>
+        <a mat-button routerLink="/create" routerLinkActive="active-link">New Post</a>
+      </li>
+    } @else {
+      <li>
+        <a mat-button routerLink="/login" routerLinkActive="active-link">Login & Signup</a>
+      </li>
+    }
+  </ul>
+</mat-toolbar>

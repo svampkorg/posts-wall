@@ -1,0 +1,27 @@
+@if (loading()) {
+  <mat-spinner></mat-spinner>
+} @else {
+  @if (hasPosts()) {
+    <mat-accordion displayMode="flat">
+      @for (post of posts(); track post.id) {
+        <post-list-element [post]="post"></post-list-element>
+      } @empty {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>No posts found!</mat-expansion-panel-header>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+    <mat-paginator
+    [length]="postsCount()"
+    [pageSizeOptions]="postsPerPageOptions"
+    [pageIndex]="pageIndex"
+    [pageSize]="postsPerPage"
+    (page)="onPageChange($event)">
+    </mat-paginator>
+  } @else if (!loading()) {
+    <p class="info-text mat-body-1">No posts to display.</p>
+  }
+}
+<!-- @if (error()) { -->
+<!--   <mat-error> {{ error() }} </mat-error> -->
+<!-- } -->

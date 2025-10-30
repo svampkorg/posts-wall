@@ -1,0 +1,36 @@
+<mat-card>
+  @if (this.isLoading()) {
+    <mat-progress-spinner></mat-progress-spinner>
+  } @else {
+    <form (ngSubmit)="changeSettings()" [formGroup]="form">
+      <mat-form-field>
+        <input
+          matInput
+          type="text"
+          placeholder="User name"
+          formControlName="name"
+          (change)="onNameChanged($event)"
+        />
+        @if (form.get('name')?.invalid && (form.get('name')?.dirty || form.get('title')?.touched)) {
+          <mat-error>Please enter a valid name with at least 3 characters</mat-error>
+        }
+      </mat-form-field>
+      @if (hasChangedName()) {
+        <div class="success-text">
+          <p>Successfully changed name!</p>
+        </div>
+      } @else {
+        <div class="form-buttons">
+          <button
+            [disabled]="form.get('name')?.invalid"
+            (click)="changeSettings()"
+            class="create-user"
+            matButton
+          >
+            Set name
+          </button>
+        </div>
+      }
+    </form>
+  }
+</mat-card>
