@@ -10,7 +10,7 @@ services:
   backend:
     build:
       context: ./backend
-    # removed to allow for load balancing scaling with nginx
+    # removed this to allow for load balancing scaling with nginx
     # ports:
     #   - "${PORT}:${PORT}"
     environment:
@@ -18,8 +18,12 @@ services:
       - DB_SERVER=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
       - HOST_ADDRESS=${HOST_ADDRESS}
       - SUPER_SECRET=${SUPER_SECRET}
+      - GCP_BUCKET_NAME=${GCP_BUCKET_NAME}
+      - GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/gcp-key.json
     volumes:
-      - ./backend/images:/usr/src/app/images
+      - ./gcp-key.json:/usr/src/app/gcp-key.json:ro
+      # NOTE: left for use with local storage on server
+      # - ./backend/images:/usr/src/app/images
     depends_on:
       - mongodb
 

@@ -1,7 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import path, { dirname } from "path";
+// NOTE: left for use with local storage on server
+// import path, { dirname } from "path";
 
 import posts from "./routes/posts.js";
 import user from "./routes/user.js";
@@ -24,7 +25,9 @@ const app = express();
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
-app.use("/images", express.static(path.join(dirname(""), "images")));
+
+// NOTE: left for use with local storage on server
+// app.use("/images", express.static(path.join(dirname(""), "images")));
 
 app.use((req, res, next) => {
   console.log("Inc req from host: ", req.host);

@@ -45,3 +45,4 @@ backend/node_modules
 .env
 .vscode
 sa
+gcp-key.json

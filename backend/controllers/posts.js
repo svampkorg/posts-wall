@@ -1,17 +1,11 @@
 import Post from "../models/post.js";
 import { isValidObjectId } from "mongoose";
-import { deleteImageFromPost } from "../middleware/files.js";
+import { deleteImageFromGcp } from "../middleware/files.js";
 
 function getBaseUrl(req) {
   const protocol = req.protocol;
-  // console.log("getBaseUrl req.protocol: ", req.protocol);
-  // Use X-Forwarded-Host from Nginx proxy (if available), else use direct host
   const host = req.get("X-Forwarded-Host") || req.get("host");
-  // console.log(' - req.get("X-Forwarded-Host")', req.get("X-Forwarded-Host"));
-  // console.log(' - req.get("host")', req.get("host"));
-  // console.log("All headers: ", req.headers);
   const url = `${protocol}://${host}`;
-  // console.log("Constructed url: ", url);
   return url;
 }
 
@@ -34,7 +28,12 @@ export async function deletePost(req, res, _next) {
 
       console.log("post deleted");
       const count = await Post.estimatedDocumentCount();
-      deleteImageFromPost(postToDelete);
+
+      if (postToDelete) {
+        await deleteImageFromGcp(postToDelete);
+        // NOTE: left for use with local storage on server
+        // deleteImageFromPost(postToDelete);
+      }
 
       return res.status(200).json({
         message: "post successfully deleted",
@@ -175,13 +174,16 @@ export async function updatePost(req, res, _next) {
     } else {
       console.log("There was a file provided");
 
-      const url = getBaseUrl(req);
+      // NOTE: left for use with local storage on server
+      // const url = getBaseUrl(req);
       const result = await Post.updateOne(
         { _id: id, author: userId },
         {
           title: req.body.title,
           content: req.body.content,
-          imagePath: url + `/images/${userId}/` + req.file.filename,
+          // NOTE: left for use with local storage on server
+          // imagePath: url + `/images/${userId}/` + req.file.filename,
+          imagePath: req.file.gcpUrl,
         },
       );
       if (!result.acknowledged && !result.modifiedCount) {
@@ -190,7 +192,11 @@ export async function updatePost(req, res, _next) {
         });
       }
 
-      if (postToChange) deleteImageFromPost(postToChange);
+      if (postToChange) {
+        await deleteImageFromGcp(postToChange);
+        // NOTE: left for use with local storage on server
+        // deleteImageFromPost(postToChange);
+      }
     }
 
     const post = await Post.findById(id);
@@ -218,13 +224,16 @@ export async function updatePost(req, res, _next) {
 }
 
 export async function savePost(req, res, _next) {
-  const url = getBaseUrl(req);
+  // NOTE: left for use with local storage on server
+  // const url = getBaseUrl(req);
   const userId = req.userData.userId;
 
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url + `/images/${userId}/` + req.file.filename,
+    // NOTE: left for use with local storage on server
+    // imagePath: url + `/images/${userId}/` + req.file.filename,
+    imagePath: req.file.gcpUrl,
     author: userId,
   });
 

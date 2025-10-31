@@ -2,8 +2,10 @@ import express from "express";
 
 import {
   extractFile,
-  filesStorage,
-  processAndSaveImage,
+  // NOTE: left for use with local storage on server
+  // filesStorage,
+  // processAndSaveImage,
+  processAndUploadToGcp,
 } from "../middleware/files.js";
 import checkAuth from "../middleware/check-auth.js";
 import * as PostController from "../controllers/posts.js";
@@ -14,7 +16,9 @@ router.post(
   "",
   checkAuth,
   extractFile,
-  processAndSaveImage,
+  // NOTE: left for use with local storage on server
+  // processAndSaveImage,
+  processAndUploadToGcp,
   PostController.savePost,
 );
 router.get("", PostController.getPosts);
@@ -23,7 +27,9 @@ router.patch(
   "/:id",
   checkAuth,
   extractFile,
-  processAndSaveImage,
+  // NOTE: left for use with local storage on server
+  // processAndSaveImage,
+  processAndUploadToGcp,
   PostController.updatePost,
 );
 router.delete("/:id", checkAuth, PostController.deletePost);
